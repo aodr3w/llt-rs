@@ -13,7 +13,7 @@ pub struct RingBuffer<T> {
     /// of `T's` when we `recv`
     buffer: Box<[UnsafeCell<MaybeUninit<T>>]>,
 
-    /// The capacity of the buffer, Must be a power of 2 (why ?)
+    /// The capacity of the buffer, Must be a power of 2 (an optimization that allows us to use bit trick instead of modulo)
     cap: usize,
 
     /// The `head` counter.
@@ -41,6 +41,7 @@ impl<T> RingBuffer<T> {
     /// The actual capacity will be rounded up to the next power of 2.
     pub fn new(capacity: usize) -> Self {
         // Round up to the next power of 2
+        //this allows us to replace a slow modulo with fast BITWISE-AND
         let cap = capacity.next_power_of_two();
         //Create a Vec and fill it with uninitialized data
         let mut buffer = Vec::with_capacity(cap);
@@ -76,14 +77,14 @@ impl<T> RingBuffer<T> {
         self.len() == 0
     }
 
-    /// trues to send a item into a buffer
+    /// sends a item into a buffer
     ///
     /// Fails if the buffer is full, returning an `Err(item)`.
     /// This is the *Producer* method.
     pub fn send(&self, item: T) -> Result<(), T> {
         // Load the current head and tail.
         // `head` can be Relaxed because only *we* can change it.
-        // `tail` must be `Acquire` to "see" the consumer's `Release` (or producer's release)
+        // `tail` must be `Acquire` to "see" the consumer's `Release`
         // store, which signals that a slot has been freed.
         let head = self.head.load(Ordering::Relaxed);
         let tail = self.tail.load(Ordering::Acquire);
@@ -164,7 +165,7 @@ impl<T> Drop for RingBuffer<T> {
             //1. We have `&mut self`, so no other thread is racing.
             //2. We are iterating from `tail` to `head` which are the
             // slots that contain initialized data.
-            // 3 `drop_in_place` calls the destructtor for `T`
+            // 3 `drop_in_place` calls the destructor for `T`
             unsafe {
                 let slot_ptr = self.buffer[slot_idx].get();
                 //Use `as_mut` to get `&mut MaybeUninit<T>`
@@ -235,8 +236,6 @@ mod tests {
                 // Spin-wait if the buffer is full
                 // FIX: Use `_item` to mark the variable as intentionally unused.
                 while let Err(_item) = producer_rb.send(i) {
-                    // In a real app, you might `std::hint::spin_loop()`
-                    // or `thread::yield_now()`
                     thread::yield_now();
                 }
             }
