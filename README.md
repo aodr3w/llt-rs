@@ -1,33 +1,57 @@
-# llt-rs
-low latency tools - rust
+llt-rs (Low-Latency Toolkit)
 
----
+llt-rs is a collection of high-performance, lock-free primitives designed for low-latency applications in Rust.
 
-### Low-Latency Toolkit Primitives
+This crate focuses on wait-free data structures that minimize CPU cache contention and eliminate the latency spikes associated with standard locking mechanisms.
 
-This toolkit provides core primitives designed for building high-performance, low-latency applications.
+Features
 
-#### 1. Lock-Free and Wait-Free Data Structures
-* **Atomic Ring Buffer (SPSC)**: A raw, wait-free, fixed-size ring buffer for **single-producer, single-consumer** scenarios. It uses explicit memory ordering (`Acquire`/`Release`) and cache-line padding to eliminate lock contention and false sharing.
+1. Atomic Ring Buffer (SPSC)
 
-#### 2. High-Performance Channels
-* **SPSC Channel**: A hybrid channel wrapper around the Atomic Ring Buffer. It combines the nanosecond-scale latency of lock-free operations with the CPU efficiency of blocking. It spins briefly for immediate data, but uses `Condvar` to park the thread during idle periods.
+A wait-free, fixed-size, Single-Producer Single-Consumer (SPSC) ring buffer.
 
----
+Wait-Free: Guarantees progress for both producer and consumer in a bounded number of steps.
 
-#### 3. Thread Management
-* **Steal-able Task Scheduler**: A scheduler that dynamically balances workloads by allowing idle threads to "steal" tasks from busy threads.
-* **CPU Affinity-Aware Thread Pool**: A thread pool that can pin threads to specific CPU cores, reducing cache misses and context-switching overhead.
+Lock-Free: Uses AtomicUsize with explicit Acquire/Release memory ordering. Zero Mutex or spin_loop overhead in the hot path.
 
----
+Cache-Friendly: Uses CachePadded (via crossbeam-utils) to prevent false sharing between the head and tail counters, ensuring independent CPU cache lines for producer and consumer.
 
-#### 4. Memory Management
-* **Object Pool**: A system for pre-allocating and recycling objects to avoid the latency spikes associated with dynamic memory allocation.
-* **Arena Allocator**: An allocator that manages memory in a large, pre-allocated block, freeing all objects at once for efficient batch processing.
+Performance: Optimized for power-of-2 capacities to use bitwise-AND indexing instead of slow modulo operations.
 
----
+Usage
 
-#### 5. Utilities & Diagnostics
-* **High-Resolution Clock**: A precise, low-overhead clock for accurate latency measurement and profiling.
-* **Latency Profiler**: Tools to measure and visualize latency distribution, helping identify and eliminate performance outliers.
-* **Non-Blocking Logger**: A logger that writes messages without blocking the main execution thread, enabling production debugging without performance impact.
+```
+use llt_rs::RingBuffer;
+use std::thread;
+use std::sync::Arc;
+
+fn main() {
+    let rb = Arc::new(RingBuffer::new(1024));
+    let rb_consumer = rb.clone();
+
+    thread::spawn(move || {
+        for i in 0..100 {
+            // Busy-wait loop (fastest possible latency)
+            while let Err(_) = rb.send(i) {}
+        }
+    });
+
+    for i in 0..100 {
+        while let None = rb_consumer.recv() {}
+        // Process item...
+    }
+}
+
+```
+
+Roadmap
+
+v0.1.0 (Current): SPSC Atomic Ring Buffer.
+
+v0.2.0 (Planned): Blocking SPSC Channel (Hybrid Wait Strategy).
+
+Future: MPMC Queues, Object Pools, and Affinity-Aware Thread Pools.
+
+License
+
+MIT
