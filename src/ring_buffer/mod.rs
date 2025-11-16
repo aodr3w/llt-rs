@@ -1,3 +1,5 @@
+#![doc = include_str!("../README.md")]
+
 use crossbeam_utils::CachePadded;
 use std::cell::UnsafeCell;
 use std::mem::MaybeUninit;
