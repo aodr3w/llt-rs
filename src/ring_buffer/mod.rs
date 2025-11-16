@@ -1,4 +1,4 @@
-#![doc = include_str!("../README.md")]
+#![doc = include_str!("README.md")]
 
 use crossbeam_utils::CachePadded;
 use std::cell::UnsafeCell;

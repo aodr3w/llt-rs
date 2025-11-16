@@ -2,8 +2,6 @@
 
 A wait-free, fixed-size, Single-Producer Single-Consumer (SPSC) ring buffer.
 
---
-
 ## Overview
 This primitive provides the lowest possible latency for passing messages between two threads. Unlike 
 standard channels, it avoids all locking overhead in the "happy path" (when the buffer is neither empty nor full).
