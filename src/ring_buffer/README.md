@@ -36,7 +36,7 @@ We use crossbeam_utils::CachePadded to force head and tail onto separate cache l
 We force the capacity to be the next power of 2. This allows us to use a fast bitwise-AND (head & mask) to calculate buffer indices, replacing the expensive modulo (%) instruction found in standard ring buffers.
 
 
-# USAGE
+## USAGE
 
 ```
 use llt_rs::RingBuffer;
