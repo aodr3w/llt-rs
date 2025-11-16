@@ -36,22 +36,46 @@ We use crossbeam_utils::CachePadded to force head and tail onto separate cache l
 We force the capacity to be the next power of 2. This allows us to use a fast bitwise-AND (head & mask) to calculate buffer indices, replacing the expensive modulo (%) instruction found in standard ring buffers.
 
 
+# USAGE
+
 ```
 use llt_rs::RingBuffer;
 use std::sync::Arc;
 use std::thread;
+use std::hint;
 
 fn main() {
-    let queue = Arc::new(RingBuffer::new(1024));
-    let producer = queue.clone();
-    let consumer = queue.clone();
+    let capacity = 1024;
+    let rb = Arc::new(RingBuffer::new(capacity));
+    let producer = rb.clone();
+    let consumer = rb.clone();
 
+    // Producer Thread
     thread::spawn(move || {
-        producer.send(1).unwrap();
+        for i in 0..10_000 {
+            // Busy-wait until space is available.
+            // We use `hint::spin_loop()` to be CPU-friendly.
+            while let Err(item) = producer.send(i) {
+                hint::spin_loop();
+            }
+        }
     });
 
-    while consumer.recv().is_none() {
-        // spin wait
+    // Consumer Thread
+    for _ in 0..10_000 {
+        // Busy-wait until data is available
+        loop {
+            match consumer.recv() {
+                Some(val) => {
+                    // Process the data...
+                    break;
+                }
+                None => {
+                    // Buffer is empty. Spin.
+                    hint::spin_loop();
+                }
+            }
+        }
     }
 }
 
