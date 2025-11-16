@@ -4,8 +4,10 @@ version = "0.1.0"
 edition = "2024"
 description = "Low-Latency Toolkit Primitives for Rust"
 license = "MIT"
+readme = "README.md"
 repository = "https://github.com/aodr3w/llt-rs"
-authors = ["Andrew Odiit andrewodiit2020@gmail.com"]
+homepage = "https://github.com/aodr3w/llt-rs"
+authors = ["Andrew Odiit <andrewodiit2020@gmail.com>"]
 
 # SEO Metadata
 keywords = ["lock-free", "concurrency", "ring-buffer", "spsc", "low-latency"]
