@@ -10,12 +10,12 @@ standard channels, it avoids all locking overhead in the "happy path" (when the 
 
 ## Design & Internals
 
-1. Wait-Free Progress
+### 1. Wait-Free Progress
 
 This structure uses Atomic Operations (AtomicUsize) exclusively. It guarantees that both the producer and consumer can make progress in a bounded number of steps, provided the buffer conditions (not full/not empty) are met.
 
 
-2. Memory Ordering (Acquire / Release)
+### 2. Memory Ordering (Acquire / Release)
 
 We use explicit memory ordering to synchronize the producer and consumer without global locks.
 
@@ -26,12 +26,12 @@ Consumer: Uses Acquire ordering when reading the head to ensure it sees the publ
 (and vice-versa for the tail pointer)
 
 
-3. False Sharing Prevention
+### 3. False Sharing Prevention
 
 The head and tail counters are heavily contended. If they share a CPU cache line, the cores will fight over ownership of that line ("cache-line ping-pong"), destroying performance.
 We use crossbeam_utils::CachePadded to force head and tail onto separate cache lines (typically 64 bytes apart).
 
-4. Power-of-2 Optimization
+### 4. Power-of-2 Optimization
 
 We force the capacity to be the next power of 2. This allows us to use a fast bitwise-AND (head & mask) to calculate buffer indices, replacing the expensive modulo (%) instruction found in standard ring buffers.
 
