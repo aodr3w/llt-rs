@@ -1,33 +1,45 @@
-# llt-rs
-low latency tools - rust
+llt-rs Project Roadmap
 
----
+This document outlines the development trajectory for the llt-rs toolkit.
 
-### Low-Latency Toolkit Primitives
+1. Lock-Free and Wait-Free Data Structures
 
-This toolkit provides core primitives designed for building high-performance, low-latency applications.
+Core primitives for data exchange without locking overhead.
 
-#### 1. Lock-Free and Wait-Free Data Structures
-* **Atomic Ring Buffer (SPSC)**: A raw, wait-free, fixed-size ring buffer for **single-producer, single-consumer** scenarios. It uses explicit memory ordering (`Acquire`/`Release`) and cache-line padding to eliminate lock contention and false sharing.
+[x] Atomic Ring Buffer (SPSC): A highly efficient, fixed-size queue for single-producer, single-consumer scenarios. (v0.1.0)
 
-#### 2. High-Performance Channels
-* **SPSC Channel**: A hybrid channel wrapper around the Atomic Ring Buffer. It combines the nanosecond-scale latency of lock-free operations with the CPU efficiency of blocking. It spins briefly for immediate data, but uses `Condvar` to park the thread during idle periods.
+[ ] Wait-Free MPMC Queue: A queue that guarantees non-blocking progress for message passing between multiple producers and consumers.
 
----
+2. High-Performance Channels
 
-#### 3. Thread Management
-* **Steal-able Task Scheduler**: A scheduler that dynamically balances workloads by allowing idle threads to "steal" tasks from busy threads.
-* **CPU Affinity-Aware Thread Pool**: A thread pool that can pin threads to specific CPU cores, reducing cache misses and context-switching overhead.
+Ergonomic wrappers around the core primitives.
 
----
+[ ] SPSC Channel: A hybrid channel (Spin + Condvar) for one-to-one communication. (Target: v0.2.0)
 
-#### 4. Memory Management
-* **Object Pool**: A system for pre-allocating and recycling objects to avoid the latency spikes associated with dynamic memory allocation.
-* **Arena Allocator**: An allocator that manages memory in a large, pre-allocated block, freeing all objects at once for efficient batch processing.
+[ ] Bounded MPMC Channel: A channel with fixed capacity to manage backpressure and prevent unbounded memory growth.
 
----
+3. Thread Management
 
-#### 5. Utilities & Diagnostics
-* **High-Resolution Clock**: A precise, low-overhead clock for accurate latency measurement and profiling.
-* **Latency Profiler**: Tools to measure and visualize latency distribution, helping identify and eliminate performance outliers.
-* **Non-Blocking Logger**: A logger that writes messages without blocking the main execution thread, enabling production debugging without performance impact.
+Tools to control thread execution and placement.
+
+[ ] CPU Affinity-Aware Thread Pool: A thread pool that can pin threads to specific CPU cores to reduce cache misses.
+
+[ ] Steal-able Task Scheduler: A dynamic workload balancer (work-stealing) for efficient task distribution.
+
+4. Memory Management
+
+Strategies to avoid the non-deterministic latency of global allocators.
+
+[ ] Object Pool: A system for pre-allocating and recycling objects (avoiding malloc/free in hot paths).
+
+[ ] Arena Allocator: An allocator that manages memory in large blocks for efficient batch processing and cleanup.
+
+5. Utilities & Diagnostics
+
+Tools to measure and verify low-latency performance.
+
+[ ] High-Resolution Clock: Low-overhead clock for precise profiling.
+
+[ ] Non-Blocking Logger: A logging system that offloads I/O to a separate thread to prevent blocking the critical path.
+
+[ ] Latency Profiler: Tools (HDR Histogram) to visualize latency distribution and identify outliers.
