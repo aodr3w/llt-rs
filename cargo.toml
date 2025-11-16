@@ -1,3 +1,15 @@
-[workspace]
-resolver = "3"
-members = ["ring-buffer"]
+[package]
+name = "llt-rs"
+version = "0.1.0"
+edition = "2024"
+description = "Low-Latency Toolkit Primitives for Rust"
+license = "MIT"
+repository = "https://github.com/aodr3w/llt-rs"
+authors = ["Andrew Odiit andrewodiit2020@gmail.com"]
+
+# SEO Metadata
+keywords = ["lock-free", "concurrency", "ring-buffer", "spsc", "low-latency"]
+categories = ["concurrency", "data-structures"]
+
+[dependencies]
+crossbeam-utils = "0.8"
