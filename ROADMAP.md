@@ -18,14 +18,14 @@ This toolkit provides core primitives designed for building high-performance, lo
 #### 3. Thread Management
 [ ] **Steal-able Task Scheduler**: A scheduler that dynamically balances workloads by allowing idle threads to "steal" tasks from busy threads.
 
-* **CPU Affinity-Aware Thread Pool**: A thread pool that can pin threads to specific CPU cores, reducing cache misses and context-switching overhead.
+[ ] **CPU Affinity-Aware Thread Pool**: A thread pool that can pin threads to specific CPU cores, reducing cache misses and context-switching overhead.
 
 ---
 
 #### 4. Memory Management
 [ ] **Object Pool**: A system for pre-allocating and recycling objects to avoid the latency spikes associated with dynamic memory allocation.
 
-* **Arena Allocator**: An allocator that manages memory in a large, pre-allocated block, freeing all objects at once for efficient batch processing.
+[ ] **Arena Allocator**: An allocator that manages memory in a large, pre-allocated block, freeing all objects at once for efficient batch processing.
 
 ---
 
