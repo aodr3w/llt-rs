@@ -8,8 +8,10 @@ low latency tools - rust
 This toolkit provides core primitives designed for building high-performance, low-latency applications.
 
 #### 1. Lock-Free and Wait-Free Data Structures
-* **Wait-Free MPMC Queue**: A queue that guarantees non-blocking progress for message passing between multiple producers and consumers, eliminating the latency spikes caused by locks.
-* **Atomic Ring Buffer**: A highly efficient, fixed-size queue for single-producer, single-consumer scenarios, ideal for fast event pipelines.
+* **Atomic Ring Buffer (SPSC)**: A raw, wait-free, fixed-size ring buffer for **single-producer, single-consumer** scenarios. It uses explicit memory ordering (`Acquire`/`Release`) and cache-line padding to eliminate lock contention and false sharing.
+
+#### 2. High-Performance Channels
+* **SPSC Channel**: A hybrid channel wrapper around the Atomic Ring Buffer. It combines the nanosecond-scale latency of lock-free operations with the CPU efficiency of blocking. It spins briefly for immediate data, but uses `Condvar` to park the thread during idle periods.
 
 ---
 
