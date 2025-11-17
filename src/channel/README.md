@@ -4,13 +4,15 @@ This module provides a high-level, blocking, single-producer single-consumer (SP
 
 ### Overview
 
-This Channel is a wrapper around the core RingBuffer primitive. It adds a crucial feature: CPU-efficient blocking when the channel is empty or full.
+This Channel is a wrapper around the core RingBuffer primitive. 
+
+It adds a crucial feature: `CPU-efficient blocking when the channel is empty or full.`
 
 The raw RingBuffer is blazing fast but requires a busy-wait (a spin_loop) that burns 100% CPU when idle. This Channel implements a hybrid wait strategy to get the best of both worlds.
 
 ### Design: The Hybrid Wait
 
-The Sender::send and Receiver::recv methods operate in two stages:
+The `Sender::send` and `Receiver::recv` methods operate in two stages:
 
 ### Fast Path (User Space):
 
