@@ -37,3 +37,45 @@ This design provides the raw speed of a lock-free queue when work is active, but
 ### Disconnection
 
 If the Sender is dropped, `recv()` will drain any remaining items from the buffer and then return None, signaling that the channel is closed.
+
+
+
+
+### Usage
+
+Here is an example demonstrating the blocking behavior. The main thread will call rx.recv() on an empty channel and block (sleep) until the producer thread wakes it up.
+
+```
+use llt_rs::channel;
+use std::thread;
+use std::time::{Duration, Instant};
+
+fn main() {
+    let (tx, rx) = channel::<i32>(4);
+
+    // Spawn a producer thread that sends a value after a delay.
+    thread::spawn(move || {
+        println!("[PRODUCER] Sleeping for 100ms...");
+        thread::sleep(Duration::from_millis(100));
+        println!("[PRODUCER] Sending 42");
+        tx.send(42);
+    });
+
+    println!("[CONSUMER] Calling recv()... (will block)");
+    let start = Instant::now();
+    
+    // This call will block the main thread, consuming 0% CPU
+    // until the producer sends the item.
+    let item = rx.recv().unwrap();
+    
+    let duration = start.elapsed();
+
+    println!("[CONSUMER] Woke up and received: {}", item);
+    println!("[CONSUMER] Blocked for: {:?}", duration);
+
+    // This assertion shows the thread was asleep.
+    assert!(duration.as_millis() >= 90);
+}
+
+
+```
