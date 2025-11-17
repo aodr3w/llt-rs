@@ -1,6 +1,6 @@
 [package]
 name = "llt-rs"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 description = "Low-Latency Toolkit Primitives for Rust"
 license = "MIT"
@@ -15,3 +15,10 @@ categories = ["concurrency", "data-structures"]
 
 [dependencies]
 crossbeam-utils = "0.8"
+
+
+[features]
+# By default, only the bare-metal RingBuffer is compiled.
+default = []
+# The "channel" feature enables the hybrid, blocking SPSC Channel (requires std).
+channel = []
