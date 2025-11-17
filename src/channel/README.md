@@ -26,14 +26,14 @@ This path has nanosecond latency and is the primary path for a healthy, high-thr
 
 If the fast path fails (buffer is full or empty), the thread must wait.
 
-Instead of spinning, it acquires a Mutex and calls Condvar::wait().
+Instead of spinning, it acquires a Mutex and calls `Condvar::wait()`.
 
 This "parks" the thread (puts it to sleep), consuming 0% CPU while it waits.
 
-When the other thread sends/receives, it calls Condvar::notify_one() to wake up the sleeping thread.
+When the other thread sends/receives, it calls `Condvar::notify_one()` to wake up the sleeping thread.
 
 This design provides the raw speed of a lock-free queue when work is active, but the efficiency of an OS-level lock when the system is idle.
 
 ### Disconnection
 
-If the Sender is dropped, recv() will drain any remaining items from the buffer and then return None, signaling that the channel is closed.
+If the Sender is dropped, `recv()` will drain any remaining items from the buffer and then return None, signaling that the channel is closed.
