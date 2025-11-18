@@ -3,7 +3,7 @@ low latency tools - rust
 
 ---
 
-### Low-Latency Toolkit Primitives
+### Low-Latency Toolkit
 
 This toolkit provides core primitives designed for building high-performance, low-latency applications.
 
@@ -23,7 +23,7 @@ This toolkit provides core primitives designed for building high-performance, lo
 ---
 
 #### 4. Memory Management
-[ ] **Object Pool**: A system for pre-allocating and recycling objects to avoid the latency spikes associated with dynamic memory allocation.
+[x] **Object Pool**: A system for pre-allocating and recycling objects to avoid the latency spikes associated with dynamic memory allocation.
 
 [ ] **Arena Allocator**: An allocator that manages memory in a large, pre-allocated block, freeing all objects at once for efficient batch processing.
 
