@@ -1,3 +1,5 @@
+#[cfg(feature = "arena_allocator")]
+pub mod arena_allocator;
 #[cfg(feature = "channel")]
 pub mod channel;
 #[cfg(feature = "object_pool")]

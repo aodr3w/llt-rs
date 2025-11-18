@@ -25,3 +25,6 @@ channel = []
 
 # The "object-pool" feature enables the object-pool module (requires std).
 object_pool = []
+
+# The "arena_allocator" feature enables the arena_allocator module (requires std).
+arena_allocator = []
