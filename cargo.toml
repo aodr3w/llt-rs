@@ -22,3 +22,6 @@ crossbeam-utils = "0.8"
 default = []
 # The "channel" feature enables the hybrid, blocking SPSC Channel (requires std).
 channel = []
+
+# The "object-pool" feature enables the object-pool module (requires std).
+object_pool = []
