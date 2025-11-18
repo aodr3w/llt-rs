@@ -25,3 +25,40 @@ This makes it impossible to "lose" or forget to return a pooled object, preventi
 If the pool is empty (all objects are currently in use), try_get() will immediately return None.
 
 This is a critical, non-blocking behavior. It allows your application to handle backpressure (e.g., reject an incoming request, signal a "busy" state) instead of blocking the thread or (even worse) allocating a new object.
+
+
+
+
+## Usage
+
+```
+use llt_rs::ObjectPool;
+
+struct Order {
+    id: u64,
+    price: f64,
+}
+
+fn main() {
+    // 1. Create a pool of 1024 pre-allocated orders
+    // The closure is called 1024 times to fill the pool.
+    let pool = ObjectPool::new(1024, || Order { id: 0, price: 0.0 });
+
+    // 2. Get an object from the pool (returns a guard)
+    if let Some(mut order_guard) = pool.try_get() {
+        // 3. Use it like a normal mutable reference
+        order_guard.id = 101;
+        order_guard.price = 99.99;
+        
+        println!("Processing Order #{}", order_guard.id);
+        
+        // 4. When `order_guard` goes out of scope here, 
+        // the Order is automatically reset (if you impl a reset) 
+        // and returned to the pool.
+    }
+    
+    // Pool is full again
+    assert_eq!(pool.available(), 1024);
+}
+
+```
