@@ -25,7 +25,7 @@ This toolkit provides core primitives designed for building high-performance, lo
 #### 4. Memory Management
 [x] **Object Pool**: A system for pre-allocating and recycling objects to avoid the latency spikes associated with dynamic memory allocation.
 
-[ ] **Arena Allocator**: An allocator that manages memory in a large, pre-allocated block, freeing all objects at once for efficient batch processing.
+[x] **Arena Allocator**: An allocator that manages memory in a large, pre-allocated block, freeing all objects at once for efficient batch processing.
 
 ---
 

@@ -1,8 +1,8 @@
 [package]
 name = "llt-rs"
-version = "0.4.0"
+version = "0.4.1"
 edition = "2024"
-description = "Low-Latency Toolkit Primitives for Rust"
+description = "Low-Latency Primitives Toolkit for Rust"
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/aodr3w/llt-rs"
