@@ -12,6 +12,20 @@ In low-latency systems, Context Switching and Cache Misses are major performance
 
 Thread Pinning tells the OS Scheduler: "Do not move this thread. Keep it on Core X forever."
 
+
+## Platform Support
+
+While this module compiles on all major platforms (Linux, macOS, Windows) to facilitate cross-platform development, Thread Pinning is effectively a Linux-only feature.
+
+**Linux**: ✅ Full Support (Confirmed). Pinning works as expected via sched_setaffinity.
+
+**macOS**: ❌ No Support. Apple's XNU kernel does not allow user-space thread binding. pin_to_core will always return false.
+
+**Windows**: ⚠️ Experimental/Unverified. The underlying calls exist, but this crate has currently only verified behavior on Linux.
+
+**Recommendation**: Develop on your preferred OS, but rely on pin_to_core returning bool to handle environments where pinning is unavailable gracefully
+
+
 ## Usage
 
 This example demonstrates a standard "Pipelined" architecture where the Gateway (Network I/O) and
