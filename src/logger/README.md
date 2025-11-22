@@ -5,7 +5,7 @@ A high-performance logging facility designed for low-latency applications.
 ## Overview
 
 Standard logging (like println! or log crate implementations writing to files) involves Blocking I/O.
-If your hot-path thread (e.g., a Matching Engine) calls a logger that blocks waiting for a disk write or a mutex on stdout, you introduce massive, non-deterministic latency spikes.
+If your hot-path thread  calls a logger that blocks waiting for a disk write or a mutex on stdout, you introduce massive, non-deterministic latency spikes.
 
 This module solves this by offloading the I/O to a dedicated thread.
 
@@ -15,7 +15,7 @@ This module solves this by offloading the I/O to a dedicated thread.
 
 **Zero-Blocking Guarantee**: The logger uses try_send. If the logging buffer is full, the message is dropped (and a counter incremented) rather than blocking the trading engine. In low-latency, it is better to lose a log line than to miss a trade.
 
-**Pinned Worker**: The background logging thread can be optionally pinned to a specific CPU core (using llt-rs::affinity) to keep it away from your matching engine.
+**Pinned Worker**: The background logging thread can be optionally pinned to a specific CPU core (using llt-rs::affinity)
 
 ## Usage
 
