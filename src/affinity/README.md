@@ -20,6 +20,7 @@ the Matching Engine (Logic) are pinned to separate cores to maximize cache local
 ```
 use llt_rs::affinity;
 use std::thread;
+// CRITICAL IMPORT: Required for the synchronization logic below
 use std::sync::{Arc, Barrier};
 
 fn main() {
@@ -32,7 +33,10 @@ fn main() {
         return;
     }
 
-    // Barrier to synchronize start (just for the demo)
+    // Barrier to synchronize start. We wait for 3 parties:
+    // 1. Gateway Thread
+    // 2. Engine Thread
+    // 3. Main Thread
     let barrier = Arc::new(Barrier::new(3));
     
     // --- THREAD 1: GATEWAY (Network I/O) ---
@@ -47,9 +51,12 @@ fn main() {
         }
         
         println!("[Gateway] Pinned to Core ID: {}", gateway_core.id);
-        b1.wait(); // Wait for everyone to be ready
+        
+        // Wait for the system to be fully initialized
+        b1.wait(); 
         
         // ... Run network event loop ...
+        // loop { read_socket(); write_ring_buffer(); }
     });
 
     // --- THREAD 2: MATCHING ENGINE (Hot Logic) ---
@@ -64,11 +71,15 @@ fn main() {
         }
         
         println!("[Engine]  Pinned to Core ID: {}", engine_core.id);
-        b2.wait(); // Wait for everyone to be ready
+        
+        // Wait for the system to be fully initialized
+        b2.wait();
 
         // ... Run matching logic loop ...
+        // loop { read_ring_buffer(); match_orders(); }
     });
 
+    // Main thread waits for everyone to be pinned and ready
     barrier.wait();
     println!("System started with thread isolation.");
 }
