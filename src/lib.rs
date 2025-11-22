@@ -1,3 +1,5 @@
+#[cfg(feature = "affinity")]
+pub mod affinity;
 #[cfg(feature = "arena_allocator")]
 pub mod arena_allocator;
 #[cfg(feature = "channel")]

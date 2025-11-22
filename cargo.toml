@@ -1,6 +1,6 @@
 [package]
 name = "llt-rs"
-version = "0.4.2"
+version = "0.5.0"
 edition = "2024"
 description = "Low-Latency Primitives Toolkit for Rust"
 license = "MIT"
@@ -15,6 +15,7 @@ categories = ["concurrency", "data-structures"]
 
 [dependencies]
 crossbeam-utils = "0.8"
+core_affinity = { version = "0.8", optional = true }
 
 
 [features]
@@ -28,3 +29,5 @@ object_pool = []
 
 # The "arena_allocator" feature enables the arena_allocator module (requires std).
 arena_allocator = []
+
+affinity = ["dep:core_affinity"]
