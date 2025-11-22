@@ -18,7 +18,7 @@ This toolkit provides core primitives designed for building high-performance, lo
 #### 3. Thread Management
 [ ] **Steal-able Task Scheduler**: A scheduler that dynamically balances workloads by allowing idle threads to "steal" tasks from busy threads.
 
-[ ] **CPU Affinity-Aware Thread Pool**: A thread pool that can pin threads to specific CPU cores, reducing cache misses and context-switching overhead.
+[x] **CPU Affinity-Aware Thread Pool**: A thread pool that can pin threads to specific CPU cores, reducing cache misses and context-switching overhead.
 
 ---
 
