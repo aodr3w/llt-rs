@@ -4,8 +4,8 @@ A high-performance logging facility designed for low-latency applications.
 
 ## Overview
 
-Standard logging (like println! or log crate implementations writing to files) involves Blocking I/O.
-If your hot-path thread  calls a logger that blocks waiting for a disk write or a mutex on stdout, you introduce massive, non-deterministic latency spikes.
+Standard logging (like println! or writing to files) involves Blocking I/O.
+If your hot-path thread calls a logger that blocks waiting for a disk write or a mutex on stdout, you introduce massive, non-deterministic latency spikes.
 
 This module solves this by offloading the I/O to a dedicated thread.
 
@@ -13,7 +13,7 @@ This module solves this by offloading the I/O to a dedicated thread.
 
 **The SPSC Channel**: We use the llt-rs::channel to pass log messages from the hot thread to the logger thread.
 
-**Zero-Blocking Guarantee**: The logger uses try_send. If the logging buffer is full, the message is dropped (and a counter incremented) rather than blocking the trading engine. In low-latency, it is better to lose a log line than to miss a trade.
+**Zero-Blocking Guarantee**: The logger uses try_send. If the logging buffer is full, the message is dropped (and a counter incremented) rather than blocking your application.
 
 **Pinned Worker**: The background logging thread can be optionally pinned to a specific CPU core (using llt-rs::affinity)
 
@@ -28,44 +28,38 @@ use std::thread;
 use std::time::Duration;
 
 fn main() {
-    // 1. Initialize the logger with a large buffer (power of 2).
-    // This spawns the background writer thread immediately.
+    // 1. Initialize logger (spawns background thread)
+    // 4096 is the buffer capacity.
     let logger = Logger::new(4096);
 
     println!("System starting...");
 
-    // 2. Simulate a Hot Path (e.g., Market Data Handler)
-    // We clone the logger to pass it to the new thread.
+    // 2. Simulate a Hot Path
     let log_handle = logger.clone();
     
     let handle = thread::spawn(move || {
-        // Simulating a burst of high-speed events
+        // Burst of high-speed events
         for i in 0..100 {
             // CRITICAL: This call takes nanoseconds.
-            // It creates the string and pushes pointers.
-            // It does NOT wait for stdout/disk.
-            log_handle.log(format!("[MD] Tick received: AAPL @ ${}.00", 150 + i));
+            // It DOES NOT wait for stdout/disk.
+            log_handle.log(format!("[MD] Tick: AAPL @ ${}.00", 150 + i));
             
-            // Simulate work (processing the tick)
-            // In reality, this sleep would be absent or microsecond-scale.
-            thread::sleep(Duration::from_micros(10));
+            // Simulate work (nanoseconds)
+            thread::sleep(Duration::from_nanos(100));
         }
         log_handle.log("[MD] Burst complete.");
     });
 
-    // 3. The main thread can do other work...
-    thread::sleep(Duration::from_millis(50));
-    println!("Main thread working...");
-
+    // 3. Main thread continues...
     handle.join().unwrap();
     
-    // 4. Check metrics before exit
+    // 4. Check metrics
     let dropped = logger.get_dropped_count();
     if dropped > 0 {
-        eprintln!("Warning: Logger dropped {} messages due to backpressure.", dropped);
+        eprintln!("Warning: Dropped {} logs due to backpressure.", dropped);
     }
     
-    // Give the background thread a tiny slice of time to flush the remaining buffer
+    // Flush time
     thread::sleep(Duration::from_millis(10));
 }
 
