@@ -3,35 +3,30 @@ low latency tools - rust
 
 ---
 
-### Low-Latency Toolkit
+### Low-Latency Toolkit Primitives
 
-This toolkit provides core primitives designed for building high-performance, low-latency applications.
+This toolkit provides core primitives designed for building high-performance, low-latency applications, specifically targeting Single-Producer Single-Consumer (SPSC) architectures like Limit Order Books.
 
 #### 1. Lock-Free and Wait-Free Data Structures
-[x]  **Atomic Ring Buffer (SPSC)**: A raw, wait-free, fixed-size ring buffer for **single-producer, single-consumer** scenarios. It uses explicit memory ordering (`Acquire`/`Release`) and cache-line padding to eliminate lock contention and false sharing. (v0.1.0)
+[x]  **Atomic Ring Buffer (SPSC)**: A raw, wait-free, fixed-size ring buffer for single-producer, single-consumer scenarios. Optimized with cache-line padding and Acquire/Release semantics. (v0.1.0)
 
 #### 2. High-Performance Channels
-[x] **SPSC Channel**: A hybrid channel wrapper around the Atomic Ring Buffer. It combines the nanosecond-scale latency of lock-free operations with the CPU efficiency of blocking. It spins briefly for immediate data, but uses `Condvar` to park the thread during idle periods.
+[x] **SPSC Channel**: A hybrid channel wrapper around the Atomic Ring Buffer. Combines nanosecond-scale lock-free latency with the CPU efficiency of Condvar blocking during idle periods. (v0.2.0)
 
 ---
 
 #### 3. Thread Management
-[ ] **Steal-able Task Scheduler**: A scheduler that dynamically balances workloads by allowing idle threads to "steal" tasks from busy threads.
-
-[x] **CPU Affinity-Aware Thread Pool**: A thread pool that can pin threads to specific CPU cores, reducing cache misses and context-switching overhead.
+[x] **CPU Affinity-Aware Thread Pool**: Utilities to enumerate cores and pin threads to specific CPU cores. Critical for isolating the "hot path" (Matching Engine) from OS scheduler jitter
 
 ---
 
 #### 4. Memory Management
-[x] **Object Pool**: A system for pre-allocating and recycling objects to avoid the latency spikes associated with dynamic memory allocation.
+[x] **Object Pool**: A thread-safe system for recycling fixed-size objects (e.g., Orders) to avoid the non-deterministic latency of the global allocator. (v0.3.0)
 
-[x] **Arena Allocator**: An allocator that manages memory in a large, pre-allocated block, freeing all objects at once for efficient batch processing.
+[x] **Arena Allocator**: A batch-reset bump allocator for short-lived events (e.g., Market Data updates). Allows zero-cost allocation/deallocation cycles per tick. (v0.4.0)
 
 ---
 
 #### 5. Utilities & Diagnostics
-[ ] **High-Resolution Clock**: A precise, low-overhead clock for accurate latency measurement and profiling.
 
-[ ] **Latency Profiler**: Tools to measure and visualize latency distribution, helping identify and eliminate performance outliers.
-
-[x] **Non-Blocking Logger**: A logger that writes messages without blocking the main execution thread, enabling production debugging without performance impact.
+[x] **Non-Blocking Logger**: A high-performance logging facility that offloads I/O to a pinned background thread via an SPSC channel, ensuring the critical path never blocks on disk or console. (v0.6.0)
