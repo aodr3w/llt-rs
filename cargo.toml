@@ -1,6 +1,6 @@
 [package]
 name = "llt-rs"
-version = "0.5.1"
+version = "0.6.0"
 edition = "2024"
 description = "Low-Latency Primitives Toolkit for Rust"
 license = "MIT"
@@ -10,8 +10,8 @@ homepage = "https://github.com/aodr3w/llt-rs"
 authors = ["Andrew Odiit <andrewodiit2020@gmail.com>"]
 
 # SEO Metadata
-keywords = ["lock-free", "concurrency", "ring-buffer", "spsc", "low-latency"]
-categories = ["concurrency", "data-structures"]
+keywords = ["lock-free", "concurrency", "ring-buffer", "spsc", "low-latency", "logger"]
+categories = ["concurrency", "data-structures", "memory-management", "development-tools"]
 
 [dependencies]
 crossbeam-utils = "0.8"
@@ -31,3 +31,5 @@ object_pool = []
 arena_allocator = []
 
 affinity = ["dep:core_affinity"]
+
+logger = ["channel", "affinity"]

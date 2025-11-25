@@ -1,3 +1,5 @@
+pub mod ring_buffer;
+pub use ring_buffer::RingBuffer;
 #[cfg(feature = "affinity")]
 pub mod affinity;
 #[cfg(feature = "arena_allocator")]
@@ -6,5 +8,6 @@ pub mod arena_allocator;
 pub mod channel;
 #[cfg(feature = "object_pool")]
 pub mod object_pool;
-pub mod ring_buffer;
-pub use ring_buffer::RingBuffer;
+
+#[cfg(feature = "logger")]
+pub mod logger;

@@ -34,4 +34,4 @@ This toolkit provides core primitives designed for building high-performance, lo
 
 [ ] **Latency Profiler**: Tools to measure and visualize latency distribution, helping identify and eliminate performance outliers.
 
-[ ] **Non-Blocking Logger**: A logger that writes messages without blocking the main execution thread, enabling production debugging without performance impact.
+[x] **Non-Blocking Logger**: A logger that writes messages without blocking the main execution thread, enabling production debugging without performance impact.
